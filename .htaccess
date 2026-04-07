@@ -1,0 +1,58 @@
+# Waste Management System - Apache Configuration
+
+# Enable mod_rewrite
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Set the base path
+    RewriteBase /waste-management-system/
+    
+    # Prevent direct access to these directories
+    RewriteRule ^(config|includes|modules/*/index)$ - [F,L]
+    
+    # Remove trailing slashes
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.+)/$ /$1 [L,R=301]
+</IfModule>
+
+# Disable directory listing
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>
+
+# Set proper character encoding
+AddDefaultCharset UTF-8
+
+# Prevent caching of PHP files
+<FilesMatch "\.php$">
+    Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+    Header set Pragma "no-cache"
+    Header set Expires "Wed, 11 Jan 1984 05:00:00 GMT"
+</FilesMatch>
+
+# Allow access to CSS and other assets
+<FilesMatch "\.(css|js|jpg|jpeg|png|gif|ico|svg)$">
+    Header set Cache-Control "public, max-age=3600"
+</FilesMatch>
+
+# Security headers
+Header set X-Content-Type-Options "nosniff"
+Header set X-Frame-Options "SAMEORIGIN"
+Header set X-XSS-Protection "1; mode=block"
+
+# Prevent access to hidden files
+<FilesMatch "^\.|\.htaccess|\.htpasswd|\.env|\.git">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Compress output
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/x-javascript
+</IfModule>
+
+# Allow access to public files
+<FilesMatch "\.(php|html|css|js|jpg|jpeg|png|gif|ico|woff|woff2|ttf|svg|eot)$">
+    Order allow,deny
+    Allow from all
+</FilesMatch>
